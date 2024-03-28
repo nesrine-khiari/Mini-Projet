@@ -53,7 +53,7 @@ public class TaskListClient {
                                 System.out.println("Aucune tâche enregistrée pour le moment.");
                             } else {
                                 for (int i = 0; i < tasks.size(); i++) {
-                                    System.out.println((i + 1) + ". " + tasks.get(i));
+                                    System.out.println((i) + ". " + tasks.get(i));
                                 }
                             }
                             break;
