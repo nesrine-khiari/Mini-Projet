@@ -21,6 +21,7 @@ public class TaskListClient {
             try (Scanner scanner = new Scanner(System.in)) {
                 while (true) {
                     // Affichage du menu
+                    System.out.println();
                     System.out.println("== Gestionnaire de Tâches ==");
                     System.out.println("1. Ajouter une nouvelle tâche");
                     System.out.println("2. Supprimer une tâche existante");
