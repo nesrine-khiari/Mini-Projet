@@ -22,7 +22,8 @@ Java RMI:
 4- Compiler et exécuter le serveur RMI (TaskListServer.java).
 5- Ouvrir le dossier client
 6- Compiler et exécuter le client RMI (TaskListClient.java).
-Suivre les instructions dans l'interface utilisateur du client pour interagir avec le service.
+Test:
+Le client offre un menu pour ajouter, supprimer et afficher des tâches.
 
 gRPC
 1- Cloner le dépôt gRPC.
@@ -31,7 +32,8 @@ gRPC
 4- Compiler et exécuter le serveur gRPC (MessagingServer.java) sous le chemin relatif(grpc\grpcMessaging\src\main\java\com\messaging\MessagingServer.java)
 5- Ouvrir le dossier grpcClient
 6- Compiler et exécuter le client gRPC (MessagingClient.java) sous le cheminr relatif (grpc\grpcClient\src\main\java\grpcClient\MessagingClient.java)
-Suivre les instructions dans l'interface utilisateur du client pour interagir avec le service.
+Test:
+Le client permet d'envoyer des messages au serveur.
 
 Sockets
 1- Cloner le dépôt Sockets.
