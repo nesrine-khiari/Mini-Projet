@@ -1,5 +1,4 @@
 # Application de Gestion de Tâches avec Java RMI, gRPC et les sockets
-# Application de Gestion de Tâches avec Java RMI
 
 Ce projet vise à explorer et à comparer trois technologies de communication distribuée en Java : Java RMI, gRPC et les sockets. Nous implémentons des services spécifiques dans chaque technologie pour comprendre leurs fonctionnalités, performances et flexibilité.
 
