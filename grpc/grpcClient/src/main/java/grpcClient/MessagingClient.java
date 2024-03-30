@@ -11,6 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class MessagingClient {
@@ -62,16 +63,25 @@ public class MessagingClient {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        MessagingClient client = new MessagingClient("localhost", 9023);
+    public static void main(String[] args) throws InterruptedException {
+        MessagingClient client = new MessagingClient("localhost", 9023); 
+        Scanner scanner = new Scanner(System.in); 
         try {
-            // Sending a message
-            client.sendMessage("Nesrine", "Nour", "hello");
+         
+            System.out.println("Entrer votre nom:");
+            String sender = scanner.nextLine(); 
+            System.out.println("Entrez le nom du destinataire:");
+            String recipient = scanner.nextLine(); 
+            System.out.println("Entrer le message:");
+            String message = scanner.nextLine(); 
+            client.sendMessage(sender, recipient, message); 
 
-            // Getting messages for a user
-            client.getMessagesForUser("Nesrine");
+
+            System.out.println("Entrez le nom d'un utilisateur pour vérifier les messages qu'il a reçus:");
+            recipient = scanner.nextLine(); 
+            client.getMessagesForUser(recipient); 
         } finally {
-            client.shutdown();
+            client.shutdown(); 
         }
     }
 }
