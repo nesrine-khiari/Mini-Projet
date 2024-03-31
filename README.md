@@ -54,4 +54,7 @@ Sockets
 - Compiler et exécuter le serveur Socket (ChatServer.java).
 - Ouvrir le dossier client
 - Compiler et exécuter le client Socket (ChatClient.java).
+
+Test:
+  
 Suivre les instructions dans l'interface utilisateur du client pour interagir avec le service.
