@@ -1,0 +1,50 @@
+
+
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.sysRepartis.MessagingServiceGrpc;
+import com.sysRepartis.MessagingServiceGrpc.MessagingServiceImplBase;
+
+public class GrpcServer {
+
+    private static final ConcurrentHashMap<String, List<Message>> messagesStore = new ConcurrentHashMap<>();
+
+    static class MessagingServiceImpl extends MessagingServiceGrpc.MessagingServiceImplBase {
+        
+        @Override
+        public void sendMessage(SendMessageRequest request, StreamObserver<SendMessageResponse> responseObserver) {
+            Message message = request.getMessage();
+            messagesStore.computeIfAbsent(message.getRecipient(), k -> new ArrayList<>()).add(message);
+
+            SendMessageResponse response = SendMessageResponse.newBuilder().setSuccess(true).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+
+        @Override
+        public void getMessages(GetMessagesRequest request, StreamObserver<GetMessagesResponse> responseObserver) {
+            List<Message> userMessages = messagesStore.getOrDefault(request.getUser(), new ArrayList<>());
+
+            GetMessagesResponse response = GetMessagesResponse.newBuilder().addAllMessages(userMessages).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Server server = ServerBuilder.forPort(8080)
+                .addService(new MessagingServiceImpl())
+                .build();
+
+        server.start();
+        System.out.println("Server started on " + server.getPort());
+        server.awaitTermination();
+    }
+}

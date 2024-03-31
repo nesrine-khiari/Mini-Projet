@@ -1,0 +1,39 @@
+package com.messaging;
+
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
+import com.messaging.*;
+
+public class MessagingServer {
+	  public static void main(String[] args) throws Exception {
+	        Server server = ServerBuilder.forPort(8080)
+	                .addService(new ImplémentationChat())
+	                .build();
+
+	        server.start();
+	        System.out.println("Serveur démarré");
+	        server.awaitTermination();
+	    }
+
+	    static class ImplémentationChat extends ChatServiceGrpc.ChatServiceImplBase {
+	        @Override
+	        public void sendMessage(MessageRequest request, StreamObserver<MessageResponse> responseObserver) {
+	            // Logique pour envoyer un message
+	            MessageResponse response = MessageResponse.newBuilder().setStatus("Message envoyé").build();
+	            responseObserver.onNext(response);
+	            responseObserver.onCompleted();
+	        }
+
+	        @Override
+	        public void getMessagesForUser(UserRequest request, StreamObserver<MessageList> responseObserver) {
+	            // Logique pour obtenir les messages pour un utilisateur
+	            MessageList messages = MessageList.newBuilder()
+	                    .addMessages(Message.newBuilder().setSender("expéditeur").setMessage("Bonjour").build())
+	                    .addMessages(Message.newBuilder().setSender("expéditeur").setMessage("Salut").build())
+	                    .build();
+	            responseObserver.onNext(messages);
+	            responseObserver.onCompleted();
+	        }
+	    }
+}

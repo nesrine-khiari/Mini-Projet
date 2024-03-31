@@ -1,0 +1,7 @@
+package grpcClient;
+
+public class MessagingClient {
+    public static void main(String[] args) {
+    	
+    }
+}

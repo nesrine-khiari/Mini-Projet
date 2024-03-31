@@ -1,0 +1,5 @@
+package com.sysRepartis;
+
+public class GrpcServer {
+
+}

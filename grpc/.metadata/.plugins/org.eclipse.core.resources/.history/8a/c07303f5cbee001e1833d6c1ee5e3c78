@@ -1,0 +1,41 @@
+package com.messaging;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import com.messaging.MessagingService.Message;
+import com.messaging.MessagingService.MessageList;
+import com.messaging.MessagingService.MessageRequest;
+import com.messaging.MessagingService.MessageResponse;
+import com.messaging.MessagingService.UserRequest;
+
+public class MessagingClient {
+	public static void main(String[] args) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8080)
+                .usePlaintext()
+                .build();
+
+        ChatServiceGrpc.ChatServiceBlockingStub stub = ChatServiceGrpc.newBlockingStub(channel);
+
+
+        MessageRequest messageRequest = MessageRequest.newBuilder()
+                .setSender("expéditeur")
+                .setRecipient("destinataire")
+                .setMessage("Bonjour depuis le client")
+                .build();
+
+        MessageResponse response = stub.sendMessage(messageRequest);
+        System.out.println("Réponse : " + response.getStatus());
+
+        UserRequest userRequest = UserRequest.newBuilder()
+                .setUsername("utilisateur")
+                .build();
+
+        MessageList messageList = stub.getMessagesForUser(userRequest);
+        for (Message message : messageList.getMessagesList()) {
+            System.out.println("Expéditeur : " + message.getSender() + ", Message : " + message.getMessage());
+        }
+
+        channel.shutdown();
+    }
+}
+

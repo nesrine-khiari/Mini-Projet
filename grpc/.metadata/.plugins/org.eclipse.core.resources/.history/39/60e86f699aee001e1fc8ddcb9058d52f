@@ -1,0 +1,57 @@
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+public class GrpcServer {
+    
+    private static final int PORT = 9090;
+    
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Server server = ServerBuilder.forPort(PORT)
+                .addService(new MessagingServiceImpl())
+                .build();
+        
+        server.start();
+        
+        System.out.println("Server started, listening on " + PORT);
+        
+        server.awaitTermination();
+    }
+    
+    static class MessagingServiceImpl extends MessagingServiceGrpc.MessagingServiceImplBase {
+        
+        private Map<String, StringBuilder> userMessages = new HashMap<>();
+        
+        @Override
+        public void sendMessage(Message request, StreamObserver<Status> responseObserver) {
+            String recipient = request.getRecipient();
+            String message = request.getMessage();
+            
+            if (!userMessages.containsKey(recipient)) {
+                userMessages.put(recipient, new StringBuilder());
+            }
+            userMessages.get(recipient).append(message).append("\n");
+            
+            responseObserver.onNext(Status.newBuilder().setMessage("Message sent successfully").build());
+            responseObserver.onCompleted();
+        }
+        
+        @Override
+        public void getMessages(User request, StreamObserver<Messages> responseObserver) {
+            String user = request.getUsername();
+            
+            if (userMessages.containsKey(user)) {
+                String messages = userMessages.get(user).toString();
+                responseObserver.onNext(Messages.newBuilder().setMessages(messages).build());
+            } else {
+                responseObserver.onNext(Messages.newBuilder().setMessages("No messages").build());
+            }
+            
+            responseObserver.onCompleted();
+        }
+    }
+}

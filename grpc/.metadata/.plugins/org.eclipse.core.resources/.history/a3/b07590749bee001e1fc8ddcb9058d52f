@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package com.messaging;
+
+message Message {
+    string sender = 1;
+    string recipient = 2;
+    string message = 3;
+}
+
+message User {
+    string username = 1;
+}
+
+message Status {
+    string message = 1;
+}
+
+message Messages {
+    string messages = 1;
+}
+
+service MessagingService {
+    RPC SendMessage(Message) returns (Status);
+    RPC GetMessages(User) returns (Messages);
+}
