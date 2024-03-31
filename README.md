@@ -21,9 +21,10 @@ grpc
 
 Comment Déployer et Tester l'Application?
 
+- Cloner le dépôt pour commencer.
+
 Java RMI:
 
-- Cloner le dépôt Java RMI.
 - Ouvrir le projet dans votre IDE Java.
 - Ouvrir le dossier server
 - Compiler et exécuter le serveur RMI (TaskListServer.java).
@@ -36,7 +37,6 @@ Le client offre un menu pour ajouter, supprimer et afficher des tâches.
 
 gRPC
 
-- Cloner le dépôt gRPC.
 - Ouvrir le projet dans votre IDE Java.
 - Ouvrir le dossier grpcMessaging
 - Compiler et exécuter le serveur gRPC (MessagingServer.java) sous le chemin relatif(grpc\grpcMessaging\src\main\java\com\messaging\MessagingServer.java)
@@ -48,7 +48,6 @@ Le client permet d'envoyer des messages au serveur.
 
 Sockets
 
-- Cloner le dépôt Sockets.
 - Ouvrir le projet dans votre IDE Java.
 - Ouvrir le dossier server
 - Compiler et exécuter le serveur Socket (ChatServer.java).
