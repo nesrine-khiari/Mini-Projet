@@ -16,7 +16,7 @@ grpc
 
 Comment Déployer et Tester l'Application?
 Java RMI:
-1- Cloner le dépôt Java RMI.
+- Cloner le dépôt Java RMI.
 2- Ouvrir le projet dans votre IDE Java.
 3- Ouvrir le dossier server
 4- Compiler et exécuter le serveur RMI (TaskListServer.java).
