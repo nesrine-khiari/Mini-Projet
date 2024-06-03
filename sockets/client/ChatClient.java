@@ -17,7 +17,7 @@ public class ChatClient {
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            System.out.print("Enter your name: ");
+            System.out.print("Entrer votre nom: ");
             String userName = scanner.nextLine();
             writer.println(userName);
 
