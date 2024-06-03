@@ -41,7 +41,7 @@ public class MessagingClient {
             MessageResponse response = blockingStub.sendMessage(request);
             System.out.println("Status: " + response.getStatus());
         } catch (StatusRuntimeException e) {
-            System.err.println("RPC Echec: " + e.getStatus());
+            System.err.println("RPC Failed: " + e.getStatus());
         }
     }
 
@@ -52,15 +52,38 @@ public class MessagingClient {
                     .build();
 
             MessageList response = blockingStub.getMessagesForUser(request);
-            System.out.println("Messages de l'utilisateur " + username + ":");
+            System.out.println("Messages for user " + username + ":");
             for (Message message : response.getMessagesList()) {
-                System.out.println("Expéditeur: " + message.getSender());
+                System.out.println("Sender: " + message.getSender());
                 System.out.println("Message: " + message.getMessage());
                 System.out.println();
             }
         } catch (StatusRuntimeException e) {
-            System.err.println("RPC Echec: " + e.getStatus());
+            System.err.println("RPC Failed: " + e.getStatus());
         }
     }
-    
+
+    public static void main(String[] args) throws InterruptedException {
+        MessagingClient client = new MessagingClient("localhost", 9023);
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter sender:");
+        String sender = scanner.nextLine();
+
+        System.out.println("Enter recipient:");
+        String recipient = scanner.nextLine();
+
+        System.out.println("Enter message:");
+        String message = scanner.nextLine();
+
+        client.sendMessage(sender, recipient, message);
+
+        System.out.println("Enter username to get messages:");
+        String username = scanner.nextLine();
+
+        client.getMessagesForUser(username);
+
+        client.shutdown();
+    }
 }
