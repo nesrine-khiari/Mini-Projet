@@ -4,38 +4,67 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+
 public class ChatClient {
-    private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 5621;
 
     public static void main(String[] args) {
-        try (
-                Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Connecté au serveur de chat.");
+        String hostname = "localhost";
+        int port = 5621;
+        Scanner scanner = new Scanner(System.in);
 
-            // Thread pour lire les messages du serveur
-            Thread readThread = new Thread(() -> {
-                String message;
-                try {
-                    while ((message = in.readLine()) != null) {
-                        System.out.println(message);
+        try {
+            Socket socket = new Socket(hostname, port);
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            System.out.print("Enter your name: ");
+            String userName = scanner.nextLine();
+            writer.println(userName);
+
+            // Thread to handle message sending
+            Thread sendThread = new Thread(() -> {
+                System.out.println("Bienvenue au chat. Taper 'au revoir' pour quitter le chat");
+                while (!socket.isClosed()) {
+                    String message = scanner.nextLine();
+                    writer.println(message);
+                    if ("au revoir".equalsIgnoreCase(message)) {
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                } catch (IOException e) {
-                    System.err.println("Erreur lors de la lecture des messages du serveur : " + e.getMessage());
                 }
             });
-            readThread.start();
 
-            // Envoi des messages saisis par l'utilisateur
-            String userInput;
-            while ((userInput = scanner.nextLine()) != null) {
-                out.println(userInput);
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la connexion au serveur de chat : " + e.getMessage());
+            // Thread to handle message reception
+            Thread receiveThread = new Thread(() -> {
+                try {
+                    String serverMessage;
+                    while ((serverMessage = reader.readLine()) != null) {
+                        System.out.println(serverMessage);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Connection closed.");
+                }
+            });
+
+            // Starting both threads
+            sendThread.start();
+            receiveThread.start();
+
+            // Wait for the send thread to finish before closing resources
+            sendThread.join();
+
+        } catch (UnknownHostException ex) {
+            System.out.println("Server not found: " + ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println("I/O error: " + ex.getMessage());
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrupted: " + e.getMessage());
+        } finally {
+            scanner.close();
+            System.out.println("Client terminated.");
         }
     }
 }
