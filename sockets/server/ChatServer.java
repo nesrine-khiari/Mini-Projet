@@ -5,55 +5,76 @@ import java.util.*;
 
 public class ChatServer {
     private static final int PORT = 5621;
-    private static Set<PrintWriter> clients = new HashSet<>();
+    private static final List<ClientHandler> clients = new ArrayList<>();
 
-    public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Serveur de chat démarré sur le port " + PORT);
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(PORT);
+        System.out.println("Chat Server is listening on port  " + PORT);
+
+        try {
             while (true) {
-                new ClientHandler(serverSocket.accept()).start();
+                Socket socket = serverSocket.accept();
+                ClientHandler newUser = new ClientHandler(socket);
+                clients.add(newUser);
+                new Thread(newUser).start();
             }
-        } catch (IOException e) {
-            System.err.println("Erreur lors du démarrage du serveur de chat : " + e.getMessage());
+        } finally {
+            serverSocket.close();
         }
     }
 
-    private static class ClientHandler extends Thread {
-        private Socket socket;
-        private PrintWriter out;
+    // Broadcasts a message to all clients except the sender
+    public static void broadcastMessage(String message, ClientHandler sender) {
+        for (ClientHandler client : clients) {
+            if (client != sender) {
+                client.sendMessage(message);
+            }
+        }
+    }
+
+    // Handles client connections
+    private static class ClientHandler implements Runnable {
+        private final Socket socket;
+        private PrintWriter writer;
 
         public ClientHandler(Socket socket) {
             this.socket = socket;
         }
 
+        @Override
         public void run() {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                out = new PrintWriter(socket.getOutputStream(), true);
-                clients.add(out);
+                InputStream input = socket.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                writer = new PrintWriter(socket.getOutputStream(), true);
 
-                String message;
-                while ((message = in.readLine()) != null) {
-                    broadcastMessage(message);
-                }
-            } catch (IOException e) {
-                System.err.println("Erreur lors de la communication avec le client : " + e.getMessage());
+                String userName = reader.readLine();
+                ChatServer.broadcastMessage(userName + " has joined the chat!", this);
+
+                String clientMessage;
+
+                do {
+                    clientMessage = reader.readLine();
+                    String messageToSend = userName + ": " + clientMessage;
+                    ChatServer.broadcastMessage(messageToSend, this);
+                } while (!clientMessage.equals("bye"));
+
+                ChatServer.broadcastMessage(userName + " has left the chat.", this);
+                clients.remove(this);
+            } catch (IOException ex) {
+                System.out.println("Server exception: " + ex.getMessage());
+                ex.printStackTrace();
             } finally {
-                if (out != null) {
-                    clients.remove(out);
-                }
                 try {
                     socket.close();
-                } catch (IOException e) {
-                    System.err.println("Erreur lors de la fermeture du socket : " + e.getMessage());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
 
-        private void broadcastMessage(String message) {
-            for (PrintWriter client : clients) {
-                client.println(message);
-            }
+        void sendMessage(String message) {
+            writer.println(message);
         }
     }
 }
